@@ -8,6 +8,7 @@
 __author__ = 'Jeremy S. Perkins (FSSC)'
 __version__ = '0.1.11'
 
+import sys
 import os
 import quickAnalysis as qA
 import quickLike as qL
@@ -78,6 +79,8 @@ class quickCurve:
         self.curveConf = curveConfig
         self.likelihoodConf = likelihoodConfig
         self.analysisConf = analysisConfig
+
+
         
     def runAnalysisStep(self,bin=0,tmin=0,tmax=0,delete=True):
             
@@ -176,4 +179,49 @@ class quickCurve:
                 output = self.runLikelihoodStep(binnum,t,t+float(self.curveConf['tstep']))
                 print output
                 f.write(output+"\n")
-                
+
+def printCLIHelp():
+    """This function prints out the help for the CLI."""
+    
+    cmd = os.path.basename(sys.argv[0])
+    print """
+                        - quickCurve - 
+
+Perform a liklihood analysis on Fermi LAT data.  You can use the
+command line functions listed below or run this module from within
+python. For full documentation on this module execute 'pydoc
+quickCurve'.
+                        
+%s (-h|--help) ... This help text.
+                      
+%s (-i|--initialize) ... Generate a default config file called
+    example.cfg.  Edit this file and rename it <basename>.cfg for use
+    in the quickLike module.
+
+""" %(cmd,cmd)
+
+# Command-line interface    
+def cli():
+    """Command-line interface.  Call this without any options for usage notes."""
+    import getopt
+
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], 'hi', ['help',
+                                                        'initialize'])
+
+        for opt, val in opts:
+            if opt in ('-h','--help'):
+                printCLIHelp()
+            elif opt in ('-i','--initialize'):
+                print "Creating example configuration file called example.cfg"
+                qC = quickCurve("example")
+                qC.writeConfig()
+                return
+            
+        if not opts: raise getopt.GetoptError("Must specify an option, printing help.")
+            
+    except getopt.error as e:
+        print "Command Line Error: " + e.msg
+        printCLIHelp()
+                                                                                                                                            
+if __name__ == '__main__': cli()
