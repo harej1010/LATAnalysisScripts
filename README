@@ -32,7 +32,7 @@ To run:
    >>> qA = quickAnalysis()
    ...
 
-or
+or/
 
    # from the command line
    > quickAnalysis
